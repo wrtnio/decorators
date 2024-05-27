@@ -24,9 +24,9 @@
     "typia": "^6.0.4"
   },
   "peerDependencies": {
-    "typia": ">=6.0.4",
     "@nestia/core": ">=3.2.0",
-    "@nestia/sdk": ">=3.2.0"
+    "@nestia/sdk": ">=3.2.0",
+    "typia": ">=6.0.4"
   },
   "scripts": {
     "build": "rimraf lib && tsc",
