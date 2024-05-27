@@ -1,0 +1,138 @@
+{
+  "openapi": "3.1.0",
+  "servers": [
+    {
+      "url": "https://github.com/samchon/nestia",
+      "description": "insert your server url"
+    }
+  ],
+  "info": {
+    "version": "1.0.0",
+    "title": "@wrtn/decorators",
+    "description": "",
+    "license": {
+      "name": "MIT"
+    }
+  },
+  "paths": {
+    "/connector/google-calendar/{calendarId}/get-events": {
+      "get": {
+        "tags": [],
+        "parameters": [
+          {
+            "name": "calendarId",
+            "in": "path",
+            "schema": {
+              "type": "string",
+              "x-wrtn-placeholder": "Select a calendar to read events from."
+            },
+            "description": "",
+            "required": true,
+            "x-wrtn-selector": {
+              "method": "get",
+              "path": "/connector/google-calendar"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/IAuthHeaders"
+            },
+            "description": "",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "something": {
+                        "type": "number"
+                      },
+                      "nothing": {
+                        "type": "boolean"
+                      },
+                      "anything": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "something",
+                      "nothing",
+                      "anything"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-wrtn-icon": "https://typia.io/favicon/android-chrome-192x192.png"
+      }
+    },
+    "/connector/google-calendar": {
+      "get": {
+        "tags": [],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "title": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "string"
+                      },
+                      "url": {
+                        "type": "string",
+                        "contentMediaType": "image/png"
+                      }
+                    },
+                    "required": [
+                      "title",
+                      "data",
+                      "url"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-wrtn-icon": "https://typia.io/favicon/android-chrome-192x192.png"
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "IAuthHeaders": {
+        "type": "object",
+        "properties": {
+          "secretKey": {
+            "type": "string",
+            "x-secret-key": "Google"
+          }
+        },
+        "required": [
+          "secretKey"
+        ]
+      }
+    }
+  },
+  "tags": [],
+  "x-samchon-emended": true
+}
