@@ -1,4 +1,4 @@
-import {tags} from "typia";
+import { tags } from "typia";
 
 /**
  * JSON Scheme에 `x-secret-key` 를 추가해주는 타입.
@@ -7,14 +7,20 @@ import {tags} from "typia";
  *
  * - `string & SecretKey<"Some secret">`
  *
+ * @template Value Secret Key, 어떤 종류의 인증키가 필요한가
+ * @template Scopes 필요한 스코프 리스트, 스코프가 필요없으면 빈 배열을 사용한다
  * @reference https://typia.io/docs/json/schema/#customization
  * @author Jake
  */
-export type SecretKey<Value extends string> = tags.TagBase<{
+export type SecretKey<
+  Value extends string,
+  Scopes extends string[] = [],
+> = tags.TagBase<{
   target: "string";
   kind: "SecretKey";
   value: undefined;
   schema: {
     "x-secret-key": Value;
+    "x-secret-scopes": Scopes;
   };
 }>;
