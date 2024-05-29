@@ -14,7 +14,7 @@ import { tags } from "typia";
  */
 export type SecretKey<
   Value extends string,
-  Scopes extends string[] = [],
+  Scopes extends undefined | never | string[] = never,
 > = tags.TagBase<{
   target: "string";
   kind: "SecretKey";

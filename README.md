@@ -106,7 +106,7 @@ export interface IGoogleDriveFileUploader {
 }
 ```
 
-- [💻 JSON Schema Playground](https://typia.io/playground/?script=JYWwDg9gTgLgBDAnmYBDANHA3g1BzAZzgF84AzKCEOAIiRVRoG4AoF+gUzgGUOBjKBxgBpDogA8LOHABqqADYBXLhwAeMDgDsAJkQIwowTXnRSefCGA5E1GnXoNG8AbQC6cALxw3pgHyfcQgA6ABV8ACFUAg5xLDMYVCg8IQAuWn1DY2YzAGsjbTSaXgEhUURs6QA3BWU0xR0OMiMObVZpAj4ACw4QVDS46WkaVQBaAHdYTRHokpgRnLEaNLklDjbB4fHJ6f5BOY7LayXzQ4J14lZiX1YWIw0oMlQ+LgBJAHEICDx5DgARQ0qHAAYsAfgBVMDyCCobQcKDYeIQBaaNIZJxwABkPF2pTE4hoeE+3w4I1QihgnXmi0wzhoghhNEwNAmwA0NFc1zMUL4qBgwAgKLgaOM6yaPzSIJ+lzY9DQQQAVgQBUFUGBIcAeXyBeJnO8iT9-sBAZKOBCoTC4RyABQASiYQA)
+- [💻 JSON Schema Playground](https://typia.io/playground/?script=JYWwDg9gTgLgBDAnmYBDANHA3g1BzAZzgF84AzKCEOAIiRVRoG4AoF+gUzgGUOBjKBxgBpDogA8LOHABqqADYBXLhwAeMDgDsAJkQIwowTXnRSefCGA5E1GnUUU6OZIx21wAPnE0cAbhyhPOH1DYwBtAF04AF5vPwDTAD4Y3EIAOgAVfAAhVAIOcSwzGFQoPCEALloQozxmMwBrI20qml4BIVFEeulfBWUqx21nV21WaQI+AAsOEFQqoulpGlUAWgB3WE1V-I6YVYaxGiq5JQ5xpZWNrZ3+QX3Jy2tj8yeCC+JWYkTWFiMNKBkVB8LgASQA4hAIHh5BwACKGfwAMWAsIAqmB5BBUMNAosEBBDpoqjVjHAAGQ8O6dMTiGh4KEwjirVCKGBTA5HTBhGiCHE0TA0TbADQ0CI-MxYvioGDACDE4IGWoXFywqoo2FfNj0NBpABWBHlaVQYExwGlsvl4jCEMZsIRwGRqI4GKxOIC4oAFABKJhAA)
 
 `SecretKey<string, string[]?>` 타입은 스튜디오의 워크플로우 프로그램에서 특정 커넥터 함수를 실행함에 있어, 어떠한 속성 내지 파라미터가 외부 서비스의 secret key 를 필요로 할 때 사용하는 타입이다. 만일 해당 서비스가 OAuth 의 `scopes` 에 대한 제약 또한 가해진 경우, 두 번째 template argument `string[]` 타입을 설정해주면 된다.
 
