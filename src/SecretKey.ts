@@ -20,7 +20,7 @@ export type SecretKey<
   kind: "SecretKey";
   value: undefined;
   schema: {
-    "x-secret-key": Value;
-    "x-secret-scopes": Scopes;
+    "x-wrtn-secret-key": Value;
+    "x-wrtn-secret-scopes": Scopes;
   };
 }>;
