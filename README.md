@@ -8,9 +8,11 @@ npm i @wrtn/decorators
 
 
 
-## `Constant<Attribute>`
+## ~~`Constant<Attribute>`~~
+> `typia` 의 `tags.Constant` 로 대체 가능.
+
 ```typescript
-import { Constant } from "@wrtn/decorators";
+import { tags } from "@wrtn/decorators";
 
 export interface Something {
   /**
@@ -50,11 +52,11 @@ export interface Something {
 }
 ```
 
-- [💻 JSON Schema Playground](https://typia.io/playground/?script=JYWwDg9gTgLgBDAnmYBDANHA3g1BzAZzgF84AzKCEOAIiRVRoG4AoFgUwA9JYFl24AYQgA7AjFQiYAHhZw4AFThcY7EQBMiAIwgQANu0lwAPnBEBXEFvZQTccVGAi86OXADKAYwAW7EKmVOVQ0iLDd5GGAYAwB+AC57GEdnVnl5dXYCT0cwSNF4xOS8VJJXAD44AF5FOAAyXEIAOgApAlEvX38ABT1zPCdpDr9UMtYObmh4J1UoMlRPAXcqdhhvJzxsNwB6ACod8J2hfQNPPJE4CDJ7MHZPND04T1FxSRgCRoODuABNCHNHoxPERkYB4cxQASGHyPZ4SKRwABuqF6mQA5AgogY4JJ1HAMlkcmcPmkdls3AQbndkXFwnZhGI4TJaWlaG0QCs1s4aK4WSywrzeZFouwEjQ2Rz1nBpjZMpEuSUBelMtlgLlgKJRQo1kRgERxatJdKIeJ1o1mMy0sQLWVaaZ6S8pLJFbQRBADVyeYr+c6McLRa73RsjbL1uafXjlYT1SJNdqpUQA5yg1IZSbnGaFbyrQKbSy7bDXk7FTR2AibIhA9yLfJvc6hQZRaXy4GpSnjXK8GGffiVWqNbQtbr48oy1AK0nWzMQ+muwLs7zRmx5Lt9iS4M1zOI4OYRNG+DdifJV0efn8LiI9IgAecgSCwRCEL44Hg9BAtMjfVicRGCaqiQcyXkHdo1FfUkxoOwaETUNIKbMdK1YK0WHoNBGgAKzaERGlQMAwD0YBPFQM5pAAbSWdlAwAXTKAAKABKJggA)
+- [~~💻 JSON Schema Playground~~](https://typia.io/playground/?script=JYWwDg9gTgLgBDAnmYBDANHA3g1BzAZzgF84AzKCEOAIiRVRoG4AoFgUwA9JYFl24AYQgA7AjFQiYAHhZw4AFThcY7EQBMiAIwgQANu0lwAPnBEBXEFvZQTccVGAi86OXADKAYwAW7EKmVOVQ0iLDd5GGAYAwB+AC57GEdnVnl5dXYCT0cwSNF4xOS8VJJXAD44AF5FOAAyXEIAOgApAlEvX38ABT1zPCdpDr9UMtYObmh4J1UoMlRPAXcqdhhvJzxsNwB6ACod8J2hfQNPPJE4CDJ7MHZPND04T1FxSRgCRoODuABNCHNHoxPERkYB4cxQASGHyPZ4SKRwABuqF6mQA5AgogY4JJ1HAMlkcmcPmkdls3AQbndkXFwnZhGI4TJaWlaG0QCs1s4aK4WSywrzeZFouwEjQ2Rz1nBpjZMpEuSUBelMtlgLlgKJRQo1kRgERxatJdKIeJ1o1mMy0sQLWVaaZ6S8pLJFbQRBADVyeYr+c6McLRa73RsjbL1uafXjlYT1SJNdqpUQA5yg1IZSbnGaFbyrQKbSy7bDXk7FTR2AibIhA9yLfJvc6hQZRaXy4GpSnjXK8GGffiVWqNbQtbr48oy1AK0nWzMQ+muwLs7zRmx5Lt9iS4M1zOI4OYRNG+DdifJV0efn8LiI9IgAecgSCwRCEL44Hg9BAtMjfVicRGCaqiQcyXkHdo1FfUkxoOwaETUNIKbMdK1YK0WHoNBGgAKzaERGlQMAwD0YBPFQM5pAAbSWdlAwAXTKAAKABKJggA)
 
-JSON Schema 의 `const` 타입에, `title` 과 `description` 을 채워주는 태그.
+~~JSON Schema 의 `const` 타입에, `title` 과 `description` 을 채워주는 태그.~~
 
-TypeScript 의 통상적인 리터럴 유니언 타입은, 각각의 리터럴 값에 대하여 `title` 및 `description` 을 각기 부여할 수 없고, 오직 유니언 타입 전체에 대하여만 서술문을 작성할 수 있다. 하지만 `Constant<Value>` 타입을 사용하면, 개개별별 리터럴 값에 대하여, 별도의 서술문을 작성할 수 있다.
+~~TypeScript 의 통상적인 리터럴 유니언 타입은, 각각의 리터럴 값에 대하여 `title` 및 `description` 을 각기 부여할 수 없고, 오직 유니언 타입 전체에 대하여만 서술문을 작성할 수 있다. 하지만 `Constant<Value>` 타입을 사용하면, 개개별별 리터럴 값에 대하여, 별도의 서술문을 작성할 수 있다.~~
 
 
 
@@ -282,3 +284,12 @@ export class GoogleCalendarController {
   }
 }
 ```
+
+
+
+## `@Standalone()`
+```typescript
+export function Standalone(): MethodDecorator;
+```
+
+Controller 메서드에 `@Standalone()` 을 적용하면, 해당 API 함수는 단독으로 실행 가능한 것임을 뜻한다. 그리고 이는 스웨거 문서의 해당 operation 부에, `ISwaggerRoute["x-wrtn-standalone"]` 속성으로써 기입된다.
