@@ -1,6 +1,12 @@
 import { TypedHeaders, TypedParam, TypedRoute } from "@nestia/core";
 import { Controller } from "@nestjs/common";
-import { SecretKey, Placeholder, RouteIcon, SelectorParam } from "../src";
+import {
+  SecretKey,
+  Placeholder,
+  RouteIcon,
+  SelectorParam,
+  Standalone,
+} from "../src";
 import { tags } from "typia";
 
 @Controller("connector/google-calendar")
@@ -11,7 +17,7 @@ export class GoogleCalendarController {
     @SelectorParam(() => GoogleCalendarController.prototype.readCalenders)
     @TypedParam("calendarId")
     calendarId: string & Placeholder<"Select a calendar to read events from.">,
-    @TypedHeaders() Authorization: IAuthHeaders
+    @TypedHeaders() Authorization: IAuthHeaders,
   ): Promise<
     Array<{
       something: number;
@@ -25,6 +31,7 @@ export class GoogleCalendarController {
   }
 
   @RouteIcon("https://typia.io/favicon/android-chrome-192x192.png")
+  @Standalone()
   @TypedRoute.Get()
   public async readCalenders(): Promise<
     Array<{
