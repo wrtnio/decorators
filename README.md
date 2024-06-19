@@ -8,60 +8,6 @@ npm i @wrtn/decorators
 
 
 
-## ~~`Constant<Attribute>`~~
-> `typia` 의 `tags.Constant` 로 대체 가능.
-
-```typescript
-import { tags } from "@wrtn/decorators";
-
-export interface Something {
-  /**
-   * Collection of special constants.
-   *
-   * You can configure each constant values' title and description.
-   */
-  special:
-    | Constant<
-        "something",
-        {
-          title: "something interesting";
-          description: "This is something interesting.";
-        }
-      >
-    | Constant<
-        "nothing",
-        {
-          title: "nothing interesting";
-          description: "This is nothing interesting.";
-        }
-      >
-    | Constant<
-        "everything",
-        {
-          title: "everything interesting";
-          description: "This is everything interesting.";
-        }
-      >;
-
-  /**
-   * Just union type.
-   *
-   * You only can configure the global title and description.
-   */
-  union: "something" | "nothing" | "everything";
-}
-```
-
-- [~~💻 JSON Schema Playground~~](https://typia.io/playground/?script=JYWwDg9gTgLgBDAnmYBDANHA3g1BzAZzgF84AzKCEOAIiRVRoG4AoFgUwA9JYFl24AYQgA7AjFQiYAHhZw4AFThcY7EQBMiAIwgQANu0lwAPnBEBXEFvZQTccVGAi86OXADKAYwAW7EKmVOVQ0iLDd5GGAYAwB+AC57GEdnVnl5dXYCT0cwSNF4xOS8VJJXAD44AF5FOAAyXEIAOgApAlEvX38ABT1zPCdpDr9UMtYObmh4J1UoMlRPAXcqdhhvJzxsNwB6ACod8J2hfQNPPJE4CDJ7MHZPND04T1FxSRgCRoODuABNCHNHoxPERkYB4cxQASGHyPZ4SKRwABuqF6mQA5AgogY4JJ1HAMlkcmcPmkdls3AQbndkXFwnZhGI4TJaWlaG0QCs1s4aK4WSywrzeZFouwEjQ2Rz1nBpjZMpEuSUBelMtlgLlgKJRQo1kRgERxatJdKIeJ1o1mMy0sQLWVaaZ6S8pLJFbQRBADVyeYr+c6McLRa73RsjbL1uafXjlYT1SJNdqpUQA5yg1IZSbnGaFbyrQKbSy7bDXk7FTR2AibIhA9yLfJvc6hQZRaXy4GpSnjXK8GGffiVWqNbQtbr48oy1AK0nWzMQ+muwLs7zRmx5Lt9iS4M1zOI4OYRNG+DdifJV0efn8LiI9IgAecgSCwRCEL44Hg9BAtMjfVicRGCaqiQcyXkHdo1FfUkxoOwaETUNIKbMdK1YK0WHoNBGgAKzaERGlQMAwD0YBPFQM5pAAbSWdlAwAXTKAAKABKJggA)
-
-~~JSON Schema 의 `const` 타입에, `title` 과 `description` 을 채워주는 태그.~~
-
-~~TypeScript 의 통상적인 리터럴 유니언 타입은, 각각의 리터럴 값에 대하여 `title` 및 `description` 을 각기 부여할 수 없고, 오직 유니언 타입 전체에 대하여만 서술문을 작성할 수 있다. 하지만 `Constant<Value>` 타입을 사용하면, 개개별별 리터럴 값에 대하여, 별도의 서술문을 작성할 수 있다.~~
-
-
-
-
-
 ## `Placeholder<string>`
 ```typescript
 import { Placeholder } from "@wrtn/decorators";
@@ -95,6 +41,15 @@ export interface Something {
 만일 위와 같은 JSON Schema customizer 가 필요하다면, 아래 문서를 보고 참고하여, 새로운 JSON Schema customizer 타입을 만들어주도록 하자. 그리고 새로이 추가한 커스텀 속성에 대하여, inspector 개발자들에게 전파하도록 한다.
 
 - https://typia.io/docs/json/schema/#customization
+
+
+
+## `Prerequisite<Props>` & `@Prerequisite()`
+특정 값을 구성하기 위하여, 반드시 사전에 실행해야하는 API 에 대한 스펙, 그리고 해당 prerequisite API 를 실행한 후, 대상 값을 어떻게 변환해와야하는지 (transform) 에 대한 메타데이터를 정의한 타입과 디코레이터 함수.
+
+자세한 내용은 `Prerequisite` 타입 및 디코레이터 함수에 적힌 주석을 읽어볼 것.
+
+- https://github.com/wrtnio/decorators/blob/main/src/Prerequisite.ts
 
 
 

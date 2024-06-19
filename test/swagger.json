@@ -7,7 +7,7 @@
     }
   ],
   "info": {
-    "version": "1.3.0",
+    "version": "1.4.0",
     "title": "@wrtn/decorators",
     "description": "",
     "license": {
@@ -89,24 +89,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "type": "object",
-                    "properties": {
-                      "title": {
-                        "type": "string"
-                      },
-                      "data": {
-                        "type": "string"
-                      },
-                      "url": {
-                        "type": "string",
-                        "contentMediaType": "image/png"
-                      }
-                    },
-                    "required": [
-                      "title",
-                      "data",
-                      "url"
-                    ]
+                    "$ref": "#/components/schemas/IGoogleCalendar"
                   }
                 }
               }
@@ -115,6 +98,60 @@
         },
         "x-wrtn-standalone": true,
         "x-wrtn-icon": "https://typia.io/favicon/android-chrome-192x192.png"
+      }
+    },
+    "/connector/google-calendar/prerequisite/{url1}/{url2}": {
+      "post": {
+        "tags": [],
+        "parameters": [
+          {
+            "name": "url1",
+            "in": "path",
+            "schema": {
+              "type": "string",
+              "contentMediaType": "image/png",
+              "x-wrtn-prerequisite": {
+                "method": "get",
+                "path": "/connector/google-calendar",
+                "value": "return ((elem) => elem.url)(elem, index, array)",
+                "array": "return ((response) => response)(response)"
+              }
+            },
+            "description": "",
+            "required": true
+          },
+          {
+            "name": "url2",
+            "in": "path",
+            "schema": {
+              "type": "string",
+              "contentMediaType": "image/png",
+              "x-wrtn-prerequisite": {
+                "method": "get",
+                "path": "/connector/google-calendar",
+                "value": "return ((elem) => elem.url)(elem, index, array)",
+                "array": "return ((response) => response)(response)"
+              }
+            },
+            "description": "",
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IUrlRequestBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
       }
     }
   },
@@ -130,6 +167,44 @@
         },
         "required": [
           "secretKey"
+        ]
+      },
+      "IGoogleCalendar": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "data": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "contentMediaType": "image/png"
+          }
+        },
+        "required": [
+          "title",
+          "data",
+          "url"
+        ]
+      },
+      "IUrlRequestBody": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "contentMediaType": "image/png",
+            "x-wrtn-prerequisite": {
+              "method": "get",
+              "path": "/connector/google-calendar",
+              "array": "return response",
+              "value": "return elem.url"
+            }
+          }
+        },
+        "required": [
+          "url"
         ]
       }
     }

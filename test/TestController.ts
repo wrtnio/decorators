@@ -1,4 +1,6 @@
-import { TypedHeaders, TypedParam, TypedRoute } from "@nestia/core";
+import { TypedBody, TypedHeaders, TypedParam, TypedRoute } from "@nestia/core";
+import { tags } from "typia";
+
 import { Controller } from "@nestjs/common";
 import {
   SecretKey,
@@ -6,8 +8,9 @@ import {
   RouteIcon,
   SelectorParam,
   Standalone,
+  Prerequisite,
 } from "../src";
-import { tags } from "typia";
+import { IGoogleCalendar } from "./IGoogleCalendar";
 
 @Controller("connector/google-calendar")
 export class GoogleCalendarController {
@@ -27,22 +30,61 @@ export class GoogleCalendarController {
   > {
     Authorization;
     calendarId;
-    return [];
+    return [
+      {
+        something: 1,
+        nothing: false,
+        anything: "abcd",
+      },
+    ];
   }
 
   @RouteIcon("https://typia.io/favicon/android-chrome-192x192.png")
   @Standalone()
   @TypedRoute.Get()
-  public async readCalenders(): Promise<
-    Array<{
-      title: string;
-      data: string;
-      url: string & tags.ContentMediaType<"image/png">;
-    }>
-  > {
-    return [];
+  public async readCalenders(): Promise<IGoogleCalendar[]> {
+    return [
+      {
+        title: "something",
+        data: "nothing",
+        url: "https://typia.io/logo.png",
+      },
+    ];
+  }
+
+  @TypedRoute.Post("/prerequisite/:url1/:url2")
+  public async prerequisite(
+    @Prerequisite(
+      () => GoogleCalendarController.prototype.readCalenders,
+      (response) => response,
+      (elem) => elem.url,
+    )
+    @TypedParam("url1")
+    arraiedUrl: string & tags.ContentMediaType<"image/png">,
+    @Prerequisite(
+      () => GoogleCalendarController.prototype.readCalenders,
+      (elem) => elem.url,
+    )
+    @TypedParam("url2")
+    soleUrl: string & tags.ContentMediaType<"image/png">,
+    @TypedBody()
+    input: IUrlRequestBody,
+  ): Promise<void> {
+    arraiedUrl;
+    soleUrl;
+    input;
   }
 }
 export interface IAuthHeaders {
   secretKey: string & SecretKey<"Google">;
+}
+
+export interface IUrlRequestBody {
+  url: string &
+    tags.ContentMediaType<"image/png"> &
+    Prerequisite<{
+      method: "get";
+      path: "/connector/google-calendar";
+      value: "return elem.url";
+    }>;
 }
