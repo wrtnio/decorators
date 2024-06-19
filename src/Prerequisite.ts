@@ -69,15 +69,74 @@ export type Prerequisite<
      * - how to use: `new Function("elem", "index", "array", valueScript)(...)`
      */
     value: string;
+
+    /**
+     * Transform function returning label.
+     *
+     * `Prerequisite.Props.label` is a string typed property representing
+     * a function returning the label from the element instance of the
+     * prerequisite API respond array.
+     *
+     * The function script must be a string value that can be parsed by
+     * `new Function(string)` statement. Also, its parameter names are
+     * always `elem`, `index` and `array`. Of course, the function's
+     * return type must be always `string`.
+     *
+     * - type: `label: (elem: Element, index: number, array: Element[]) => string`
+     * - example: `return elem.title`
+     * - how to use: `new Function("elem", "index", "array", labelScript)(...)`
+     */
+    label: string;
   },
 > = tags.JsonSchemaPlugin<{
-  "x-wrtn-prerequisite": {
-    method: Props["method"];
-    path: Props["path"];
-    array: Props["array"] extends string ? Props["array"] : "return response";
-    value: Props["value"];
-  };
+  "x-wrtn-prerequisite": Props;
 }>;
+
+/**
+ * Prerequisite API interation decorator.
+ *
+ * `@Prerequisite()` is a method decorator to specify a prerequisite API.
+ * The prerequisite API means that, the decorated parameter value would be
+ * composed by the target prerequisite API interaction.
+ *
+ * The target API pointed by `Prerequisite` returns a response, which would
+ * be converted to an array of elements by `array` function. When user selects
+ * an element from the array, the parameter decorated value would be extracted
+ * by the `value` function.
+ *
+ * For reference, the `value` function must have maximum 3 parameters, and
+ * you must follow these names; (`elem`, `index`, `array`). If your parameters
+ * does not follow the names, the decorator would throw an error. The `label`
+ * function has the same restriction, and The `array` function must have
+ * only one named parameter; (`response`).
+ *
+ * Otherwise you want to interact the prerequisite API not in the parameter
+ * level, but in the nested property level, you can utilize `Prerequisite`
+ * type instead.
+ *
+ * - Array
+ *   - example: `(response) => response.members.map(m => m.data)`
+ *   - how to use: `new Function("response", arrayScript)(response)`
+ * - Value
+ *   - example: `(elem) => elem.no`
+ *   - how to use: `new Function("elem", "index", "array", valueScript)(...)`
+ * - Label
+ *   - example: `(elem) => elem.title`
+ *   - how to use: `new Function("elem", "index", "array", labelScript)(...)`
+ *
+ * @param neighbor Neighbor prerequisite API to interact
+ * @param array Array transforming function
+ * @param value Value extracting function
+ * @param label Label extracting function
+ * @returns Method decorator
+ * @author Samchon
+ */
+export function Prerequisite<PResponse, PElement, Value>(props: {
+  neighbor: () => (...args: any[]) => Promise<PResponse>;
+  array: (response: PResponse) => PElement[];
+  value: (value: PElement, index: number, array: PElement[]) => Value;
+  label: (value: PElement, index: number, array: PElement[]) => string;
+}): ParameterDecorator;
 
 /**
  * Prerequisite API interation decorator.
@@ -99,77 +158,41 @@ export type Prerequisite<
  * level, but in the nested property level, you can utilize `Prerequisite`
  * type instead.
  *
- * - example: `(elem) => elem.no`
- * - how to use: `new Function("elem", "index", "array", valueScript)(...)`
- *
- * @param neighbor Neighbor prerequisite API to interact
- * @param value Value extracting function
- * @returns Method decorator
- * @author Samchon
- */
-export function Prerequisite<PElement, Value>(
-  neighbor: () => (...args: any[]) => Promise<PElement[]>,
-  value: (elem: PElement, index: number, array: PElement[]) => Value,
-): ParameterDecorator;
-
-/**
- * Prerequisite API interation decorator.
- *
- * `@Prerequisite()` is a method decorator to specify a prerequisite API.
- * The prerequisite API means that, the decorated parameter value would be
- * composed by the target prerequisite API interaction.
- *
- * The target API pointed by `Prerequisite` returns a response, which would
- * be converted to an array of elements by `array` function. When user selects
- * an element from the array, the parameter decorated value would be extracted
- * by the `value` function.
- *
- * For reference, the `value` function must have maximum 3 parameters, and
- * you must follow these names; (`elem`, `index`, `array`). If your parameters
- * does not follow the names, the decorator would throw an error. The `array`
- * function has the same restriction, so that you have to make it to have
- * only one named parameter; (`response`).
- *
- * Otherwise you want to interact the prerequisite API not in the parameter
- * level, but in the nested property level, you can utilize `Prerequisite`
- * type instead.
- *
  * - Value
  *   - example: `(elem) => elem.no`
  *   - how to use: `new Function("elem", "index", "array", valueScript)(...)`
- * Array
- *   - example: `(response) => response.members.map(m => m.data)`
- *   - how to use: `new Function("response", arrayScript)(response)`
+ * - Label
+ *   - example: `(elem) => elem.title`
+ *   - how to use: `new Function("elem", "index", "array", labelScript)(...)`
  *
  * @param neighbor Neighbor prerequisite API to interact
- * @param array Array transforming function
  * @param value Value extracting function
+ * @param label Label extracting function
  * @returns Method decorator
  * @author Samchon
  */
-export function Prerequisite<PResponse, PElement, Value>(
-  neighbor: () => (...args: any[]) => Promise<PResponse>,
-  array: (response: PResponse) => PElement[],
-  value: (value: PElement, index: number, array: PElement[]) => Value,
-): ParameterDecorator;
+export function Prerequisite<PElement, Value>(props: {
+  neighbor: () => (...args: any[]) => Promise<PElement[]>;
+  value: (elem: PElement, index: number, array: PElement[]) => Value;
+  label: (elem: PElement, index: number, array: PElement[]) => string;
+}): ParameterDecorator;
 
-export function Prerequisite(
-  neighbor: Function,
-  f1: Function,
-  f2?: Function,
-): ParameterDecorator {
-  const valueFunc: Function = f2 ?? f1;
-  const arrayFunc: Function =
-    f2 === undefined ? (response: any) => response : f1;
+export function Prerequisite(props: {
+  neighbor: Function;
+  array?: Function;
+  value: Function;
+  label: Function;
+}): ParameterDecorator {
   return function (
     target: Object,
     key: string | symbol | undefined,
     index: number,
   ): void {
-    SwaggerCustomizer((props) => {
+    SwaggerCustomizer((asset) => {
       // FIND NEIGHBOR
-      const endpoint: SwaggerCustomizer.ISwaggerEndpoint | undefined =
-        props.at(neighbor());
+      const endpoint: SwaggerCustomizer.ISwaggerEndpoint | undefined = asset.at(
+        props.neighbor(),
+      );
       if (endpoint === undefined)
         throw new Error("Failed to find the neighbor endpoint.");
 
@@ -188,18 +211,19 @@ export function Prerequisite(
         "x-wrtn-prerequisite": {
           method: endpoint.method,
           path: endpoint.path,
-          value: assertValue(valueFunc),
-          array: assertArray(arrayFunc),
+          array: props.array ? assertArray(props.array) : undefined,
+          value: assertValue("value")(props.value),
+          label: assertValue("label")(props.label),
         },
       };
 
       // PARAMETER CASE
       const param: OpenApi.IOperation.IParameter | undefined =
-        props.route.parameters?.find((p) => p.name === nParam.data);
+        asset.route.parameters?.find((p) => p.name === nParam.data);
       if (param !== undefined) Object.assign(param.schema, plugin);
       // REQUEST BODY CASE
-      else if (props.route.requestBody !== undefined && isBody(nKey, nParam)) {
-        if (props.route.requestBody.content === undefined)
+      else if (asset.route.requestBody !== undefined && isBody(nKey, nParam)) {
+        if (asset.route.requestBody.content === undefined)
           throw new Error("No content exists in the request body.");
         for (const contentType of [
           "text/plain",
@@ -208,7 +232,7 @@ export function Prerequisite(
           "multipart/form-data",
           "*/*",
         ] as const) {
-          const media = props.route.requestBody.content[contentType];
+          const media = asset.route.requestBody.content[contentType];
           if (media?.schema !== undefined) Object.assign(media.schema, plugin);
         }
       }
@@ -228,22 +252,22 @@ interface INestParam {
   data: string | undefined;
 }
 
-const assertValue = (func: Function): string => {
-  const script: string = func.toString();
-  const params: string[] | null = assertParameters(script);
-  const valid: boolean =
-    params !== null &&
-    (params.length < 1 || params[0] === "elem") &&
-    (params.length < 2 || params[1] === "index") &&
-    (params.length < 3 || params[2] === "array");
-  if (valid === false) {
-    console.log(params);
-    throw new Error(
-      "Invalid value function parameters. It must be (elem, index?, array?)",
-    );
-  }
-  return `return (${script})(elem, index, array)`;
-};
+const assertValue =
+  (kind: "label" | "value") =>
+  (func: Function): string => {
+    const script: string = func.toString();
+    const params: string[] | null = assertParameters(script);
+    const valid: boolean =
+      params !== null &&
+      (params.length < 1 || params[0] === "elem") &&
+      (params.length < 2 || params[1] === "index") &&
+      (params.length < 3 || params[2] === "array");
+    if (valid === false)
+      throw new Error(
+        `Invalid ${kind} function parameters. It must be (elem, index?, array?)`,
+      );
+    return `return (${script})(elem, index, array)`;
+  };
 const assertArray = (func: Function): string => {
   const script: string = func.toString();
   const params: string[] | null = assertParameters(script);
