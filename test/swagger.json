@@ -7,7 +7,7 @@
     }
   ],
   "info": {
-    "version": "1.4.0",
+    "version": "1.4.1",
     "title": "@wrtn/decorators",
     "description": "",
     "license": {
@@ -113,8 +113,9 @@
               "x-wrtn-prerequisite": {
                 "method": "get",
                 "path": "/connector/google-calendar",
+                "array": "return ((response) => response)(response)",
                 "value": "return ((elem) => elem.url)(elem, index, array)",
-                "array": "return ((response) => response)(response)"
+                "label": "return ((elem) => elem.title)(elem, index, array)"
               }
             },
             "description": "",
@@ -130,7 +131,7 @@
                 "method": "get",
                 "path": "/connector/google-calendar",
                 "value": "return ((elem) => elem.url)(elem, index, array)",
-                "array": "return ((response) => response)(response)"
+                "label": "return ((elem) => elem.title)(elem, index, array)"
               }
             },
             "description": "",
@@ -198,8 +199,8 @@
             "x-wrtn-prerequisite": {
               "method": "get",
               "path": "/connector/google-calendar",
-              "array": "return response",
-              "value": "return elem.url"
+              "value": "return elem.url",
+              "label": "return elem.title"
             }
           }
         },

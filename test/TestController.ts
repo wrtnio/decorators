@@ -54,17 +54,19 @@ export class GoogleCalendarController {
 
   @TypedRoute.Post("/prerequisite/:url1/:url2")
   public async prerequisite(
-    @Prerequisite(
-      () => GoogleCalendarController.prototype.readCalenders,
-      (response) => response,
-      (elem) => elem.url,
-    )
+    @Prerequisite({
+      neighbor: () => GoogleCalendarController.prototype.readCalenders,
+      array: (response) => response,
+      value: (elem) => elem.url,
+      label: (elem) => elem.title,
+    })
     @TypedParam("url1")
     arraiedUrl: string & tags.ContentMediaType<"image/png">,
-    @Prerequisite(
-      () => GoogleCalendarController.prototype.readCalenders,
-      (elem) => elem.url,
-    )
+    @Prerequisite({
+      neighbor: () => GoogleCalendarController.prototype.readCalenders,
+      value: (elem) => elem.url,
+      label: (elem) => elem.title,
+    })
     @TypedParam("url2")
     soleUrl: string & tags.ContentMediaType<"image/png">,
     @TypedBody()
@@ -86,5 +88,6 @@ export interface IUrlRequestBody {
       method: "get";
       path: "/connector/google-calendar";
       value: "return elem.url";
+      label: "return elem.title";
     }>;
 }
