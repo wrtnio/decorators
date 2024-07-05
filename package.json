@@ -1,6 +1,6 @@
 {
-  "name": "@wrtn/decorators",
-  "version": "1.4.1",
+  "name": "@wrtnio/decorators",
+  "version": "1.4.2",
   "description": "",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
