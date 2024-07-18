@@ -205,8 +205,10 @@ export type OnlyArrayProps<T extends object> = keyof {
     : never]: GetType<T, K>;
 };
 
-export type OmitArray<T extends object> = {
-  [K in keyof T as T[K] extends Array<any> ? never : K]: T[K];
+export type OmitObject<T extends object> = {
+  [K in keyof T as T[K] extends object ? never : K]: T[K] extends object
+    ? OmitObject<T[K]>
+    : T[K];
 };
 
 export type GetElementsOfArray<
@@ -214,20 +216,18 @@ export type GetElementsOfArray<
   ArrayPropertyName extends DeepStrictObjectKeys<T, keyof T>,
 > = ArrayPropertyName extends infer K extends DeepStrictObjectKeys<T, keyof T>
   ? GetType<T, K> extends any[]
-    ? keyof OmitArray<ElementOf<GetType<T, K>>> extends infer R extends string // It is inferred as string and maps 'keyof' values to R (ReturnType) so that they can be used immediately.
+    ? keyof OmitObject<ElementOf<GetType<T, K>>> extends infer R extends string // It is inferred as string and maps 'keyof' values to R (ReturnType) so that they can be used immediately.
       ? R
       : never
     : never
   : never;
 
-export type JMESPathHelper<
-  T extends object,
-  JMESPath extends OnlyArrayProps<T> extends infer ArrayProps extends string
+export type JMESPathHelper<T extends object> =
+  OnlyArrayProps<T> extends infer ArrayProps extends string
     ? ArrayProps extends infer Key extends DeepStrictObjectKeys<T, keyof T> // To separate ArrayProps into a single key unit
-      ? `${ArrayProps}[].{value:${GetElementsOfArray<T, Key>}, label:${GetElementsOfArray<T, Key>}}`
+      ? `${T extends Array<any> ? "[]." : ""}${ArrayProps}[].{value:${GetElementsOfArray<T, Key>}, label:${GetElementsOfArray<T, Key>}}`
       : never
-    : never,
-> = JMESPath;
+    : never;
 
 /**
  * @title Type that creates 'JMESPath' from the object
@@ -267,14 +267,11 @@ export type JMESPathHelper<
  */
 export type JMESPath<
   T extends object,
-  JMESPath extends OnlyArrayProps<
-    T extends Array<any> ? ElementOf<T> : T
-  > extends infer ArrayProps extends string
-    ? ArrayProps extends infer Key extends DeepStrictObjectKeys<
-        T extends Array<any> ? ElementOf<T> : T,
-        keyof (T extends Array<any> ? ElementOf<T> : T)
-      > // To separate ArrayProps into a single key unit
-      ? `${T extends Array<any> ? "[]." : ""}${ArrayProps}[].{value:${GetElementsOfArray<T extends Array<any> ? ElementOf<T> : T, Key>}, label:${GetElementsOfArray<T extends Array<any> ? ElementOf<T> : T, Key>}}`
+  JMESPath extends T extends Array<infer E extends object>
+    ? keyof E extends string
+      ?
+          | `[].{value:${keyof OmitObject<E>}, label:${keyof OmitObject<E>}}` // if API's response type is Array<infer E>, We must get keyof type of E.
+          | `[].${JMESPathHelper<E>}`
       : never
-    : never,
+    : JMESPathHelper<T>,
 > = JMESPath;
