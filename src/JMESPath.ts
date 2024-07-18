@@ -193,7 +193,14 @@ export type GetType<T extends object, K extends DeepStrictObjectKeys<T>> =
                 >
               >
           : never
-        : never
+        : T extends any[]
+          ? RemoveArraySymbol<First> extends "" // just empty string type like as `[].campaign`
+            ? GetType<
+                ElementOf<T>,
+                Allow<Join<Rest, ".">, DeepStrictObjectKeys<ElementOf<T>>>
+              >
+            : never
+          : never
       : never;
 
 /**
@@ -211,7 +218,7 @@ export type OmitObject<T extends object> = {
     : T[K];
 };
 
-export type GetElementsOfArray<
+export type GetLabel<
   T extends object,
   ArrayPropertyName extends DeepStrictObjectKeys<T, keyof T>,
 > = ArrayPropertyName extends infer K extends DeepStrictObjectKeys<T, keyof T>
@@ -219,13 +226,23 @@ export type GetElementsOfArray<
     ? keyof OmitObject<ElementOf<GetType<T, K>>> extends infer R extends string // It is inferred as string and maps 'keyof' values to R (ReturnType) so that they can be used immediately.
       ? R
       : never
-    : never
+    : GetType<T, K> extends object
+      ? keyof GetType<T, K> extends infer R extends string
+        ? R
+        : never
+      : Split<K, "."> extends [...infer Rest, infer Last]
+        ? Last extends infer R extends string
+          ? R
+          : never
+        : never
   : never;
 
 export type JMESPathHelper<T extends object> =
-  OnlyArrayProps<T> extends infer ArrayProps extends string
-    ? ArrayProps extends infer Key extends DeepStrictObjectKeys<T, keyof T> // To separate ArrayProps into a single key unit
-      ? `${T extends Array<any> ? "[]." : ""}${ArrayProps}[].{value:${GetElementsOfArray<T, Key>}, label:${GetElementsOfArray<T, Key>}}`
+  DeepStrictObjectKeys<T> extends infer Props extends string
+    ? Props extends infer Key extends DeepStrictObjectKeys<T, keyof T> // To separate Props into a single key unit
+      ? GetType<T, Key> extends object
+        ? `${T extends Array<any> ? "[]." : ""}${GetType<T, Props> extends Array<any> ? `${Props}[]` : Props}.{value:${GetLabel<T, Key>}, label:${GetLabel<T, Key>}}`
+        : never
       : never
     : never;
 
