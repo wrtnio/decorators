@@ -5,7 +5,7 @@ import typia, { tags } from "typia";
 
 import { IGoogleCalendar } from "./IGoogleCalendar";
 
-const main = () => {
+const main = async () => {
   //----
   // READ SWAGGER FILE
   //----
@@ -144,5 +144,12 @@ const main = () => {
       ].label,
     )(calendars[0], 0, calendars),
   );
+
+  /**
+   * test for JMESPath
+   */
+  import("./JMESPath").catch((exp) => {
+    console.error(exp);
+  });
 };
 main();
