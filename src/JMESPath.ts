@@ -220,17 +220,17 @@ export type GetElementsOfArray<
     : never
   : never;
 
-export type JmesPathHelper<
+export type JMESPathHelper<
   T extends object,
-  JmesPath extends OnlyArrayProps<T> extends infer ArrayProps extends string
+  JMESPath extends OnlyArrayProps<T> extends infer ArrayProps extends string
     ? ArrayProps extends infer Key extends DeepStrictObjectKeys<T, keyof T> // To separate ArrayProps into a single key unit
       ? `${ArrayProps}[].{value:${GetElementsOfArray<T, Key>}, label:${GetElementsOfArray<T, Key>}}`
       : never
     : never,
-> = JmesPath;
+> = JMESPath;
 
 /**
- * @title Type that creates 'JmesPath' from the object
+ * @title Type that creates 'JMESPath' from the object
  *
  * It is not intended to cover the number of all cases,
  * but is a type for finding an array-type property inside an object and mapping labels and values among them.
@@ -255,19 +255,19 @@ export type JmesPathHelper<
  * }
  *
  * // The second Generic type that is automatically deduced
- * type Path1 = JmesPath<Example, "arr2[].{value:name2, label:name2}">; 
- * type Path2 = JmesPath<Example[], "[].arr2[].{value:name2, label:name2}">;
+ * type Path1 = JMESPath<Example, "arr2[].{value:name2, label:name2}">; 
+ * type Path2 = JMESPath<Example[], "[].arr2[].{value:name2, label:name2}">;
  * 
  * // Use like this!
  * type Response = Prerequisite<{
  *   method: "post";
  *   path: "path of api";
- *   jmesPath: JmesPath<Example, "[].arr2[].{value:name2, label:name2}">;
+ *   JMESPath: JMESPath<Example, "[].arr2[].{value:name2, label:name2}">;
  * }>;
  */
-export type JmesPath<
+export type JMESPath<
   T extends object,
-  JmesPath extends OnlyArrayProps<
+  JMESPath extends OnlyArrayProps<
     T extends Array<any> ? ElementOf<T> : T
   > extends infer ArrayProps extends string
     ? ArrayProps extends infer Key extends DeepStrictObjectKeys<
@@ -277,4 +277,4 @@ export type JmesPath<
       ? `${T extends Array<any> ? "[]." : ""}${ArrayProps}[].{value:${GetElementsOfArray<T extends Array<any> ? ElementOf<T> : T, Key>}, label:${GetElementsOfArray<T extends Array<any> ? ElementOf<T> : T, Key>}}`
       : never
     : never,
-> = JmesPath;
+> = JMESPath;
