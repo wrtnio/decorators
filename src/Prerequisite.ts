@@ -3,6 +3,91 @@ import { RouteParamtypes } from "@nestjs/common/enums/route-paramtypes.enum";
 import { OpenApi } from "@samchon/openapi";
 import { tags } from "typia";
 
+export interface PrerequisiteProps {
+  /**
+   * Transform function returning array instance.
+   *
+   * `Prerequisite.Props.array` is a string typed property representing
+   * a function returning an array instance from the response of the
+   * prerequisite API.
+   *
+   * The function script must be a string value that can be parsed by
+   * `new Function(string)` statement. Also, its parameter name is
+   * always `response`.
+   *
+   * If the prerequisite API responses an array and it is the desired one,
+   * you don't need to specify this property.
+   *
+   * - type: `array: (response: Response) => Elemenet[]`
+   * - example: `return response.members.map(m => m.data)`
+   * - how to use: `new Function("response", arrayScript)(response)`
+   */
+  array?: string;
+
+  /**
+   * Transform function returning target value.
+   *
+   * `Prerequisite.Props.value` is a string typed property representing
+   * a function returning the target value from the element instance of
+   * the prerequisite API respond array. If you've defined this `Prerequisite`
+   * type to a `number` type, the returned value must be actual number type.
+   *
+   * The function script must be a string value that can be parsed by
+   * `new Function(string)` statement. Also, its parameter names are always
+   * `elem`, `index` and `array`.
+   *
+   * - type: `value: (elem: Element, index: number, array: Element[]) => Value`
+   * - example: `return elem.no`
+   * - how to use: `new Function("elem", "index", "array", valueScript)(...)`
+   */
+  value: string;
+
+  /**
+   * Transform function returning label.
+   *
+   * `Prerequisite.Props.label` is a string typed property representing
+   * a function returning the label from the element instance of the
+   * prerequisite API respond array.
+   *
+   * The function script must be a string value that can be parsed by
+   * `new Function(string)` statement. Also, its parameter names are
+   * always `elem`, `index` and `array`. Of course, the function's
+   * return type must be always `string`.
+   *
+   * - type: `label: (elem: Element, index: number, array: Element[]) => string`
+   * - example: `return elem.title`
+   * - how to use: `new Function("elem", "index", "array", labelScript)(...)`
+   */
+  label: string;
+}
+
+export interface PrerequisiteJmesPathProps {
+  /**
+   * instead of {@link PrerequisiteProps}.
+   *
+   * @example
+   * // JSON
+   * {
+   *   "locations": [
+   *     {"name": "Seattle", "no": 1},
+   *     {"name": "New York", "no": 2}
+   *   ]
+   * }
+   *
+   * @example
+   * // JmesPath
+   * locations[].{value: no, label: name}
+   *
+   * @example
+   * // Results
+   * [
+   *   { "value": 1, "label": "Seattle" },
+   *   { "value": 2, "label": "New York" }
+   * ]
+   */
+  jmesPath: string;
+}
+
 /**
  * Prerequisite API interaction type.
  *
@@ -31,63 +116,7 @@ export type Prerequisite<
      * Prerequisite API path.
      */
     path: string;
-
-    /**
-     * Transform function returning array instance.
-     *
-     * `Prerequisite.Props.array` is a string typed property representing
-     * a function returning an array instance from the response of the
-     * prerequisite API.
-     *
-     * The function script must be a string value that can be parsed by
-     * `new Function(string)` statement. Also, its parameter name is
-     * always `response`.
-     *
-     * If the prerequisite API responses an array and it is the desired one,
-     * you don't need to specify this property.
-     *
-     * - type: `array: (response: Response) => Elemenet[]`
-     * - example: `return response.members.map(m => m.data)`
-     * - how to use: `new Function("response", arrayScript)(response)`
-     */
-    array?: string;
-
-    /**
-     * Transform function returning target value.
-     *
-     * `Prerequisite.Props.value` is a string typed property representing
-     * a function returning the target value from the element instance of
-     * the prerequisite API respond array. If you've defined this `Prerequisite`
-     * type to a `number` type, the returned value must be actual number type.
-     *
-     * The function script must be a string value that can be parsed by
-     * `new Function(string)` statement. Also, its parameter names are always
-     * `elem`, `index` and `array`.
-     *
-     * - type: `value: (elem: Element, index: number, array: Element[]) => Value`
-     * - example: `return elem.no`
-     * - how to use: `new Function("elem", "index", "array", valueScript)(...)`
-     */
-    value: string;
-
-    /**
-     * Transform function returning label.
-     *
-     * `Prerequisite.Props.label` is a string typed property representing
-     * a function returning the label from the element instance of the
-     * prerequisite API respond array.
-     *
-     * The function script must be a string value that can be parsed by
-     * `new Function(string)` statement. Also, its parameter names are
-     * always `elem`, `index` and `array`. Of course, the function's
-     * return type must be always `string`.
-     *
-     * - type: `label: (elem: Element, index: number, array: Element[]) => string`
-     * - example: `return elem.title`
-     * - how to use: `new Function("elem", "index", "array", labelScript)(...)`
-     */
-    label: string;
-  },
+  } & (PrerequisiteProps | PrerequisiteJmesPathProps),
 > = tags.JsonSchemaPlugin<{
   "x-wrtn-prerequisite": Props;
 }>;

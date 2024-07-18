@@ -7,8 +7,8 @@
     }
   ],
   "info": {
-    "version": "1.4.1",
-    "title": "@wrtn/decorators",
+    "version": "1.4.2",
+    "title": "@wrtnio/decorators",
     "description": "",
     "license": {
       "name": "MIT"
@@ -26,7 +26,6 @@
               "type": "string",
               "x-wrtn-placeholder": "Select a calendar to read events from."
             },
-            "description": "",
             "required": true,
             "x-wrtn-selector": {
               "method": "get",
@@ -34,12 +33,12 @@
             }
           },
           {
-            "name": "Authorization",
+            "name": "secretKey",
             "in": "header",
             "schema": {
-              "$ref": "#/components/schemas/IAuthHeaders"
+              "type": "string",
+              "x-wrtn-secret-key": "Google"
             },
-            "description": "",
             "required": true
           }
         ],
@@ -118,7 +117,6 @@
                 "label": "return ((elem) => elem.title)(elem, index, array)"
               }
             },
-            "description": "",
             "required": true
           },
           {
@@ -134,7 +132,6 @@
                 "label": "return ((elem) => elem.title)(elem, index, array)"
               }
             },
-            "description": "",
             "required": true
           }
         ],

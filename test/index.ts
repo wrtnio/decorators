@@ -45,8 +45,12 @@ const main = () => {
   //----
   TestValidator.equals("check-exist-header")(
     swagger.paths["/connector/google-calendar/{calendarId}/get-events"].get
-      .parameters[1].schema.$ref,
-  )("#/components/schemas/IAuthHeaders");
+      .parameters[1].in,
+  )("header");
+  TestValidator.equals("check-exist-header")(
+    swagger.paths["/connector/google-calendar/{calendarId}/get-events"].get
+      .parameters[1].schema["x-wrtn-secret-key"],
+  )("Google");
   TestValidator.equals("check-header-type")(
     swagger.components.schemas.IAuthHeaders.properties.secretKey[
       "x-wrtn-secret-key"
