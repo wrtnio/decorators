@@ -8,21 +8,15 @@ import typia from "typia";
 export type IsAny<T> = 0 extends 1 & T ? true : false;
 
 /**
- * It is a type that means an expression and is a type that corresponds to an element of the equal type.
- * If the two expressions are completely the same, the factors of the expression are also verified using the same.
- *
- * @template {X} Parameter
- */
-export type Expression<X> = <T>() => T extends X ? 1 : 2;
-
-/**
  * @template {X}
  * @template {Y}
  *
  * @title Type to check if both types are the same type
  */
-export type Equal<X, Y> = Expression<X> extends Expression<Y> ? true : false;
-
+export type Equal<X, Y> =
+  (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y ? 1 : 2
+    ? true
+    : false;
 /**
  * @template {T} Target
  *
@@ -225,10 +219,27 @@ type Primitive = string | number | boolean | bigint | symbol | null | undefined;
 /**
  * check is branding type.
  */
-type IsBrandType<T> = T extends infer U extends Primitive &
-  (infer V extends typia.tags.Pattern<string>)
-  ? true
-  : false;
+type IsBrandType<T> =
+  Equal<T, string> extends true
+    ? false
+    : Equal<T, number> extends true
+      ? false
+      : Equal<T, boolean> extends true
+        ? false
+        : Equal<T, bigint> extends true
+          ? false
+          : Equal<T, symbol> extends true
+            ? false
+            : Equal<T, null> extends true
+              ? false
+              : Equal<T, undefined> extends true
+                ? false
+                : T extends infer U extends Primitive &
+                      (infer V extends
+                        | typia.tags.Pattern<string>
+                        | typia.tags.Constant<any, { title: string }>)
+                  ? true
+                  : false;
 
 export type GetLabel<
   T extends object,
@@ -239,14 +250,12 @@ export type GetLabel<
       ? R
       : never
     : GetType<T, K> extends object
-      ? keyof GetType<T, K> extends infer R extends string
-        ? R
-        : IsBrandType<GetType<T, K>> extends true
-          ? Split<K, "."> extends [...infer Rest, infer Last]
-            ? Last extends infer R extends string
-              ? R
-              : never
-            : never
+      ? IsBrandType<GetType<T, K>> extends true
+        ? K
+        : keyof GetType<T, K> extends infer R extends string
+          ? R extends `${string}.${string}`
+            ? never
+            : R
           : never
       : Split<K, "."> extends [...infer Rest, infer Last]
         ? Last extends infer R extends string
@@ -259,7 +268,9 @@ export type JMESPathHelper<T extends object> =
   DeepStrictObjectKeys<T> extends infer Props extends string
     ? Props extends infer Key extends DeepStrictObjectKeys<T, keyof T> // To separate Props into a single key unit
       ? GetType<T, Key> extends object
-        ? `${T extends Array<any> ? "[]." : ""}${GetType<T, Props> extends Array<any> ? `${Props}[]` : Props}.{value:${GetLabel<T, Key>}, label:${GetLabel<T, Key>}}`
+        ? IsBrandType<GetType<T, Key>> extends true
+          ? `{value:${GetLabel<T, Key>}, label:${GetLabel<T, Key>}}`
+          : `${T extends Array<any> ? "[]." : ""}${GetType<T, Props> extends Array<any> ? `${Props}[]` : Props}.{value:${GetLabel<T, Key>}, label:${GetLabel<T, Key>}}`
         : never
       : never
     : never;

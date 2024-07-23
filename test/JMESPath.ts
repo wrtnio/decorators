@@ -1,4 +1,4 @@
-import typia from "typia";
+import { tags } from "typia";
 import { JMESPath } from "../src/JMESPath";
 /**
  * validate JMESPath type
@@ -86,19 +86,65 @@ type Path3 = JMESPath<
 >;
 
 interface AdGroupAd {
-  a: {
-    b: string;
-    c: number;
-  };
+  /**
+   * `customers/${number}/adGroupAds/${number}~${number}` 형식
+   *
+   * @title 광고 그룹 광고의 리소스 명
+   */
   resourceName: string &
-    typia.tags.Pattern<"(customers\\/[+-]?\\d+(?:\\.\\d+)?(?:[eE][+-]?\\d+)?\\/adGroupAds\\/[+-]?\\d+(?:\\.\\d+)?(?:[eE][+-]?\\d+)?~[+-]?\\d+(?:\\.\\d+)?(?:[eE][+-]?\\d+)?)">;
+    tags.Pattern<"(customers\\/[+-]?\\d+(?:\\.\\d+)?(?:[eE][+-]?\\d+)?\\/adGroupAds\\/[+-]?\\d+(?:\\.\\d+)?(?:[eE][+-]?\\d+)?~[+-]?\\d+(?:\\.\\d+)?(?:[eE][+-]?\\d+)?)">;
+
+  /**
+   * @title 광고 심사 및 정책에 대한 평가 내역
+  
+  '[].policySummary.{value:approvalStatus, label:approvalStatus}'|
+  | '[].policySummary.{value:approvalStatus, label:reviewStatus}'
+  | '[].policySummary.{value:reviewStatus, label:approvalStatus}'
+  | '[].policySummary.{value:reviewStatus, label:reviewStatus}'
+  | '[].{value:policySummary.reviewStatus, label:policySummary.reviewStatus}'
+  | '[].{value:resourceName, label:resourceName}' 
+  |'[].{value:status, label:status}'*/
+  policySummary: {
+    /**
+     * @title 광고의 승인 여부
+     * @description 구글에서 해당 광고가 송출되어도 무방한지 판단한 내용입니다.
+     */
+    approvalStatus:
+      | tags.Constant<"APPROVED", { title: "승인됨" }>
+      | tags.Constant<"APPROVED_LIMITED", { title: "제한된 승인" }>
+      | tags.Constant<
+          "AREA_OF_INTEREST_ONLY",
+          { title: "특정 영역에 대한 허용" }
+        >
+      | tags.Constant<"DISAPPROVED", { title: "비승인" }>
+      | tags.Constant<"UNKNOWN", { title: "알 수 없음" }>
+      | tags.Constant<"UNSPECIFIED", { title: "명시되지 않음" }>;
+
+    reviewStatus:
+      | tags.Constant<"ELIGIBLE_MAY_SERVE", { title: "자격을 갖춤" }>
+      | tags.Constant<"REVIEWED", { title: "검토되었음" }>
+      | tags.Constant<"REVIEW_IN_PROGRESS", { title: "검토 중임" }>
+      | tags.Constant<"UNDER_APPEAL", { title: "심사 중임" }>
+      | tags.Constant<"UNKNOWN", { title: "알 수 없음" }>
+      | tags.Constant<"UNSPECIFIED", { title: "명시되지 않음" }>;
+  };
+
+  status: string & tags.Constant<"A", { title: "A" }>;
 }
 
+type IGetAdGroupAdOutput = Pick<
+  AdGroupAd,
+  "resourceName" | "policySummary" | "status"
+>[];
+
 type Path4 = JMESPath<
-  AdGroupAd[],
-  | "[].resourceName.{value:resourceName, label:resourceName}"
-  | "[].a.{value:b, label:b}"
-  | "[].a.{value:b, label:c}"
-  | "[].a.{value:c, label:b}"
-  | "[].a.{value:c, label:c}"
+  IGetAdGroupAdOutput,
+  | "[].policySummary.{value:approvalStatus, label:approvalStatus}"
+  | "[].policySummary.{value:approvalStatus, label:reviewStatus}"
+  | "[].policySummary.{value:reviewStatus, label:approvalStatus}"
+  | "[].policySummary.{value:reviewStatus, label:reviewStatus}"
+  | "[].{value:policySummary.reviewStatus, label:policySummary.reviewStatus}"
+  | "[].{value:resourceName, label:resourceName}"
+  | "[].{value:status, label:status}"
+  | "[].{value:policySummary.approvalStatus, label:policySummary.approvalStatus}"
 >;
