@@ -1,3 +1,4 @@
+import typia from "typia";
 import { JMESPath } from "../src/JMESPath";
 /**
  * validate JMESPath type
@@ -82,4 +83,22 @@ type Path3 = JMESPath<
   | "[].arr2[].{value:name2, label:id2}"
   | "[].arr2[].{value:name2, label:name2}"
   | "[].{value:otherProps, label:otherProps}"
+>;
+
+interface AdGroupAd {
+  a: {
+    b: string;
+    c: number;
+  };
+  resourceName: string &
+    typia.tags.Pattern<"(customers\\/[+-]?\\d+(?:\\.\\d+)?(?:[eE][+-]?\\d+)?\\/adGroupAds\\/[+-]?\\d+(?:\\.\\d+)?(?:[eE][+-]?\\d+)?~[+-]?\\d+(?:\\.\\d+)?(?:[eE][+-]?\\d+)?)">;
+}
+
+type Path4 = JMESPath<
+  AdGroupAd[],
+  | "[].resourceName.{value:resourceName, label:resourceName}"
+  | "[].a.{value:b, label:b}"
+  | "[].a.{value:b, label:c}"
+  | "[].a.{value:c, label:b}"
+  | "[].a.{value:c, label:c}"
 >;

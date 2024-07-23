@@ -1,3 +1,5 @@
+import typia from "typia";
+
 /**
  * @title The type that verifies the type 'any'.
  *
@@ -218,6 +220,16 @@ export type OmitObject<T extends object> = {
     : T[K];
 };
 
+type Primitive = string | number | boolean | bigint | symbol | null | undefined;
+
+/**
+ * check is branding type.
+ */
+type IsBrandType<T> = T extends infer U extends Primitive &
+  (infer V extends typia.tags.Pattern<string>)
+  ? true
+  : false;
+
 export type GetLabel<
   T extends object,
   ArrayPropertyName extends DeepStrictObjectKeys<T, keyof T>,
@@ -229,7 +241,13 @@ export type GetLabel<
     : GetType<T, K> extends object
       ? keyof GetType<T, K> extends infer R extends string
         ? R
-        : never
+        : IsBrandType<GetType<T, K>> extends true
+          ? Split<K, "."> extends [...infer Rest, infer Last]
+            ? Last extends infer R extends string
+              ? R
+              : never
+            : never
+          : never
       : Split<K, "."> extends [...infer Rest, infer Last]
         ? Last extends infer R extends string
           ? R
