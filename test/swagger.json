@@ -112,9 +112,7 @@
               "x-wrtn-prerequisite": {
                 "method": "get",
                 "path": "/connector/google-calendar",
-                "array": "return ((response) => response)(response)",
-                "value": "return ((elem) => elem.url)(elem, index, array)",
-                "label": "return ((elem) => elem.title)(elem, index, array)"
+                "jmesPath": "[].{value: url, label: title}"
               }
             },
             "required": true
@@ -128,8 +126,7 @@
               "x-wrtn-prerequisite": {
                 "method": "get",
                 "path": "/connector/google-calendar",
-                "value": "return ((elem) => elem.url)(elem, index, array)",
-                "label": "return ((elem) => elem.title)(elem, index, array)"
+                "jmesPath": "[].{value: url, label: title}"
               }
             },
             "required": true
@@ -196,8 +193,7 @@
             "x-wrtn-prerequisite": {
               "method": "get",
               "path": "/connector/google-calendar",
-              "value": "return elem.url",
-              "label": "return elem.title"
+              "jmesPath": "[].{value: url, label: title}"
             }
           }
         },
