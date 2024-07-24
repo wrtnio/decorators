@@ -3,6 +3,7 @@ import cp from "child_process";
 import fs from "fs";
 import typia, { tags } from "typia";
 
+import jmespath from "jmespath";
 import { IGoogleCalendar } from "./IGoogleCalendar";
 
 const main = async () => {
@@ -71,83 +72,57 @@ const main = async () => {
     IGoogleCalendar[] & tags.MinItems<3> & tags.MaxItems<3>
   >();
 
-  // @Prerequisite() with array property
-  TestValidator.equals("@Prerequisite().array")(calendars)(
-    new Function(
-      "response",
-      swagger.paths["/connector/google-calendar/prerequisite/{url1}/{url2}"][
-        "post"
-      ].parameters[0].schema["x-wrtn-prerequisite"].array,
-    )(calendars),
-  );
-  TestValidator.equals("@Prerequisite().value")(calendars[0].url)(
-    new Function(
-      "elem",
-      "index",
-      "array",
-      swagger.paths["/connector/google-calendar/prerequisite/{url1}/{url2}"][
-        "post"
-      ].parameters[0].schema["x-wrtn-prerequisite"].value,
-    )(calendars[0], 0, calendars),
-  );
-  TestValidator.equals("@Prerequisite().label")(calendars[0].title)(
-    new Function(
-      "elem",
-      "index",
-      "array",
-      swagger.paths["/connector/google-calendar/prerequisite/{url1}/{url2}"][
-        "post"
-      ].parameters[0].schema["x-wrtn-prerequisite"].label,
-    )(calendars[0], 0, calendars),
+  // @Prerequisite value
+  TestValidator.equals("jmesPath")(calendars[0].url)(
+    jmespath.search(
+      calendars,
+      `${
+        swagger.paths["/connector/google-calendar/prerequisite/{url1}/{url2}"][
+          "post"
+        ].parameters[0].schema["x-wrtn-prerequisite"].jmesPath
+      }`,
+    )[0].value,
   );
 
-  // @Prerequisite() without array property
-  TestValidator.equals("@Prerequisite().value")(calendars[0].url)(
-    new Function(
-      "elem",
-      "index",
-      "array",
-      swagger.paths["/connector/google-calendar/prerequisite/{url1}/{url2}"][
-        "post"
-      ].parameters[1].schema["x-wrtn-prerequisite"].value,
-    )(calendars[0], 0, calendars),
-  );
-  TestValidator.equals("@Prerequisite().label")(calendars[0].title)(
-    new Function(
-      "elem",
-      "index",
-      "array",
-      swagger.paths["/connector/google-calendar/prerequisite/{url1}/{url2}"][
-        "post"
-      ].parameters[1].schema["x-wrtn-prerequisite"].label,
-    )(calendars[0], 0, calendars),
+  // @Prerequisite label
+  TestValidator.equals("jmesPath")(calendars[0].title)(
+    jmespath.search(
+      calendars,
+      `${
+        swagger.paths["/connector/google-calendar/prerequisite/{url1}/{url2}"][
+          "post"
+        ].parameters[0].schema["x-wrtn-prerequisite"].jmesPath
+      }`,
+    )[0].label,
   );
 
-  // Prerequisite<Props>
-  TestValidator.equals("Prerequisite.Props.value")(calendars[0].url)(
-    new Function(
-      "elem",
-      "index",
-      "array",
-      swagger.components.schemas.IUrlRequestBody.properties.url[
-        "x-wrtn-prerequisite"
-      ].value,
-    )(calendars[0], 0, calendars),
-  );
-  TestValidator.equals("Prerequisite.Props.label")(calendars[0].title)(
-    new Function(
-      "elem",
-      "index",
-      "array",
-      swagger.components.schemas.IUrlRequestBody.properties.url[
-        "x-wrtn-prerequisite"
-      ].label,
-    )(calendars[0], 0, calendars),
+  // Prerequisite<Props> value
+  TestValidator.equals("jmesPath")(calendars[0].url)(
+    jmespath.search(
+      calendars,
+      `${
+        swagger.components.schemas.IUrlRequestBody.properties.url[
+          "x-wrtn-prerequisite"
+        ].jmesPath
+      }`,
+    )[0].value,
   );
 
-  /**
-   * test for JMESPath
-   */
+  // Prerequisite<Props> label
+  TestValidator.equals("jmesPath")(calendars[0].title)(
+    jmespath.search(
+      calendars,
+      `${
+        swagger.components.schemas.IUrlRequestBody.properties.url[
+          "x-wrtn-prerequisite"
+        ].jmesPath
+      }`,
+    )[0].label,
+  );
+
+  // /**
+  //  * test for JMESPath
+  //  */
   import("./JMESPath").catch((exp) => {
     console.error(exp);
   });

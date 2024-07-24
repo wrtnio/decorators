@@ -56,16 +56,13 @@ export class GoogleCalendarController {
   public async prerequisite(
     @Prerequisite({
       neighbor: () => GoogleCalendarController.prototype.readCalenders,
-      array: (response) => response,
-      value: (elem) => elem.url,
-      label: (elem) => elem.title,
+      jmesPath: "[].{value: url, label: title}",
     })
     @TypedParam("url1")
     arraiedUrl: string & tags.ContentMediaType<"image/png">,
     @Prerequisite({
       neighbor: () => GoogleCalendarController.prototype.readCalenders,
-      value: (elem) => elem.url,
-      label: (elem) => elem.title,
+      jmesPath: "[].{value: url, label: title}",
     })
     @TypedParam("url2")
     soleUrl: string & tags.ContentMediaType<"image/png">,
@@ -87,7 +84,6 @@ export interface IUrlRequestBody {
     Prerequisite<{
       method: "get";
       path: "/connector/google-calendar";
-      value: "return elem.url";
-      label: "return elem.title";
+      jmesPath: "[].{value: url, label: title}";
     }>;
 }

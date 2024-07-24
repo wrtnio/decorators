@@ -3,91 +3,6 @@ import { RouteParamtypes } from "@nestjs/common/enums/route-paramtypes.enum";
 import { OpenApi } from "@samchon/openapi";
 import { tags } from "typia";
 
-export interface PrerequisiteProps {
-  /**
-   * Transform function returning array instance.
-   *
-   * `Prerequisite.Props.array` is a string typed property representing
-   * a function returning an array instance from the response of the
-   * prerequisite API.
-   *
-   * The function script must be a string value that can be parsed by
-   * `new Function(string)` statement. Also, its parameter name is
-   * always `response`.
-   *
-   * If the prerequisite API responses an array and it is the desired one,
-   * you don't need to specify this property.
-   *
-   * - type: `array: (response: Response) => Elemenet[]`
-   * - example: `return response.members.map(m => m.data)`
-   * - how to use: `new Function("response", arrayScript)(response)`
-   */
-  array?: string;
-
-  /**
-   * Transform function returning target value.
-   *
-   * `Prerequisite.Props.value` is a string typed property representing
-   * a function returning the target value from the element instance of
-   * the prerequisite API respond array. If you've defined this `Prerequisite`
-   * type to a `number` type, the returned value must be actual number type.
-   *
-   * The function script must be a string value that can be parsed by
-   * `new Function(string)` statement. Also, its parameter names are always
-   * `elem`, `index` and `array`.
-   *
-   * - type: `value: (elem: Element, index: number, array: Element[]) => Value`
-   * - example: `return elem.no`
-   * - how to use: `new Function("elem", "index", "array", valueScript)(...)`
-   */
-  value: string;
-
-  /**
-   * Transform function returning label.
-   *
-   * `Prerequisite.Props.label` is a string typed property representing
-   * a function returning the label from the element instance of the
-   * prerequisite API respond array.
-   *
-   * The function script must be a string value that can be parsed by
-   * `new Function(string)` statement. Also, its parameter names are
-   * always `elem`, `index` and `array`. Of course, the function's
-   * return type must be always `string`.
-   *
-   * - type: `label: (elem: Element, index: number, array: Element[]) => string`
-   * - example: `return elem.title`
-   * - how to use: `new Function("elem", "index", "array", labelScript)(...)`
-   */
-  label: string;
-}
-
-export interface PrerequisiteJmesPathProps {
-  /**
-   * instead of {@link PrerequisiteProps}.
-   *
-   * @example
-   * // JSON
-   * {
-   *   "locations": [
-   *     {"name": "Seattle", "no": 1},
-   *     {"name": "New York", "no": 2}
-   *   ]
-   * }
-   *
-   * @example
-   * // JmesPath
-   * locations[].{value: no, label: name}
-   *
-   * @example
-   * // Results
-   * [
-   *   { "value": 1, "label": "Seattle" },
-   *   { "value": 2, "label": "New York" }
-   * ]
-   */
-  jmesPath: string;
-}
-
 /**
  * Prerequisite API interaction type.
  *
@@ -116,56 +31,37 @@ export type Prerequisite<
      * Prerequisite API path.
      */
     path: string;
-  } & (PrerequisiteProps | PrerequisiteJmesPathProps),
+
+    /**
+     * JmesPath, which means value and label on the target.
+     * Value is a value required to call and usually means a unique ID value in each service,
+     * and label means a recognizable value to express what it means.
+     *
+     * @example
+     * // JSON
+     * {
+     *   "locations": [
+     *     {"name": "Seattle", "no": 1},
+     *     {"name": "New York", "no": 2}
+     *   ]
+     * }
+     *
+     * @example
+     * // JmesPath
+     * locations[].{value: no, label: name}
+     *
+     * @example
+     * // Results
+     * [
+     *   { "value": 1, "label": "Seattle" },
+     *   { "value": 2, "label": "New York" }
+     * ]
+     */
+    jmesPath: string;
+  },
 > = tags.JsonSchemaPlugin<{
   "x-wrtn-prerequisite": Props;
 }>;
-
-/**
- * Prerequisite API interation decorator.
- *
- * `@Prerequisite()` is a method decorator to specify a prerequisite API.
- * The prerequisite API means that, the decorated parameter value would be
- * composed by the target prerequisite API interaction.
- *
- * The target API pointed by `Prerequisite` returns a response, which would
- * be converted to an array of elements by `array` function. When user selects
- * an element from the array, the parameter decorated value would be extracted
- * by the `value` function.
- *
- * For reference, the `value` function must have maximum 3 parameters, and
- * you must follow these names; (`elem`, `index`, `array`). If your parameters
- * does not follow the names, the decorator would throw an error. The `label`
- * function has the same restriction, and The `array` function must have
- * only one named parameter; (`response`).
- *
- * Otherwise you want to interact the prerequisite API not in the parameter
- * level, but in the nested property level, you can utilize `Prerequisite`
- * type instead.
- *
- * - Array
- *   - example: `(response) => response.members.map(m => m.data)`
- *   - how to use: `new Function("response", arrayScript)(response)`
- * - Value
- *   - example: `(elem) => elem.no`
- *   - how to use: `new Function("elem", "index", "array", valueScript)(...)`
- * - Label
- *   - example: `(elem) => elem.title`
- *   - how to use: `new Function("elem", "index", "array", labelScript)(...)`
- *
- * @param neighbor Neighbor prerequisite API to interact
- * @param array Array transforming function
- * @param value Value extracting function
- * @param label Label extracting function
- * @returns Method decorator
- * @author Samchon
- */
-export function Prerequisite<PResponse, PElement, Value>(props: {
-  neighbor: () => (...args: any[]) => Promise<PResponse>;
-  array: (response: PResponse) => PElement[];
-  value: (value: PElement, index: number, array: PElement[]) => Value;
-  label: (value: PElement, index: number, array: PElement[]) => string;
-}): ParameterDecorator;
 
 /**
  * Prerequisite API interation decorator.
@@ -187,30 +83,14 @@ export function Prerequisite<PResponse, PElement, Value>(props: {
  * level, but in the nested property level, you can utilize `Prerequisite`
  * type instead.
  *
- * - Value
- *   - example: `(elem) => elem.no`
- *   - how to use: `new Function("elem", "index", "array", valueScript)(...)`
- * - Label
- *   - example: `(elem) => elem.title`
- *   - how to use: `new Function("elem", "index", "array", labelScript)(...)`
- *
  * @param neighbor Neighbor prerequisite API to interact
- * @param value Value extracting function
- * @param label Label extracting function
+ * @param jmesPath `JMESPath`, which means value and label on the target
  * @returns Method decorator
  * @author Samchon
  */
-export function Prerequisite<PElement, Value>(props: {
-  neighbor: () => (...args: any[]) => Promise<PElement[]>;
-  value: (elem: PElement, index: number, array: PElement[]) => Value;
-  label: (elem: PElement, index: number, array: PElement[]) => string;
-}): ParameterDecorator;
-
 export function Prerequisite(props: {
   neighbor: Function;
-  array?: Function;
-  value: Function;
-  label: Function;
+  jmesPath: string;
 }): ParameterDecorator {
   return function (
     target: Object,
@@ -240,9 +120,7 @@ export function Prerequisite(props: {
         "x-wrtn-prerequisite": {
           method: endpoint.method,
           path: endpoint.path,
-          array: props.array ? assertArray(props.array) : undefined,
-          value: assertValue("value")(props.value),
-          label: assertValue("label")(props.label),
+          jmesPath: props.jmesPath,
         },
       };
 
@@ -281,40 +159,6 @@ interface INestParam {
   data: string | undefined;
 }
 
-const assertValue =
-  (kind: "label" | "value") =>
-  (func: Function): string => {
-    const script: string = func.toString();
-    const params: string[] | null = assertParameters(script);
-    const valid: boolean =
-      params !== null &&
-      (params.length < 1 || params[0] === "elem") &&
-      (params.length < 2 || params[1] === "index") &&
-      (params.length < 3 || params[2] === "array");
-    if (valid === false)
-      throw new Error(
-        `Invalid ${kind} function parameters. It must be (elem, index?, array?)`,
-      );
-    return `return (${script})(elem, index, array)`;
-  };
-const assertArray = (func: Function): string => {
-  const script: string = func.toString();
-  const params: string[] | null = assertParameters(script);
-  const valid: boolean =
-    params === null || params.length === 0 || params[0] === "response";
-  if (valid === false)
-    throw new Error("Invalid array function parameters. It must be (response)");
-  return `return (${script})(response)`;
-};
-const assertParameters = (script: string): string[] | null => {
-  const left: number = script.indexOf("(") + 1;
-  const right: number = script.indexOf(")", left);
-  if (left === -1 || right === -1) return null;
-  return script
-    .substring(left, right)
-    .split(",")
-    .map((s) => s.trim());
-};
 const isBody = (key: string, param: INestParam): boolean => {
   const symbol: string = key.split(":")[0];
   if (symbol.indexOf("__custom") !== -1) {
