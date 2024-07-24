@@ -148,3 +148,10 @@ type Path4 = JMESPath<
   | "[].{value:status, label:status}"
   | "[].{value:policySummary.approvalStatus, label:policySummary.approvalStatus}"
 >;
+
+type TestTagBase = {
+  id: string & tags.Format<"uuid">;
+  url: string & tags.ContentMediaType<"image/*">;
+};
+
+type Path5 = JMESPath<TestTagBase[], "[].{value:url, label:url}">;

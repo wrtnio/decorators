@@ -1,4 +1,4 @@
-import typia from "typia";
+import { TagBase } from "typia/lib/tags/TagBase";
 
 /**
  * @title The type that verifies the type 'any'.
@@ -235,9 +235,7 @@ type IsBrandType<T> =
               : Equal<T, undefined> extends true
                 ? false
                 : T extends infer U extends Primitive &
-                      (infer V extends
-                        | typia.tags.Pattern<string>
-                        | typia.tags.Constant<any, { title: string }>)
+                      (infer V extends TagBase<any>)
                   ? true
                   : false;
 
