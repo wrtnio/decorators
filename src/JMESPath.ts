@@ -263,15 +263,21 @@ export type GetLabel<
   : never;
 
 export type JMESPathHelper<T extends object> =
-  DeepStrictObjectKeys<T> extends infer Props extends string
-    ? Props extends infer Key extends DeepStrictObjectKeys<T, keyof T> // To separate Props into a single key unit
-      ? GetType<T, Key> extends object
-        ? IsBrandType<GetType<T, Key>> extends true
-          ? `{value:${GetLabel<T, Key>}, label:${GetLabel<T, Key>}}`
-          : `${T extends Array<any> ? "[]." : ""}${GetType<T, Props> extends Array<any> ? `${Props}[]` : Props}.{value:${GetLabel<T, Key>}, label:${GetLabel<T, Key>}}`
-        : never
+  T extends Array<infer E extends object>
+    ? keyof E extends string
+      ?
+          | `[].{value:${keyof OmitObject<E>}, label:${keyof OmitObject<E>}}` // if API's response type is Array<infer E>, We must get keyof type of E.
+          | `[].${JMESPathHelper<E>}`
       : never
-    : never;
+    : DeepStrictObjectKeys<T> extends infer Props extends string
+      ? Props extends infer Key extends DeepStrictObjectKeys<T, keyof T> // To separate Props into a single key unit
+        ? GetType<T, Key> extends object
+          ? IsBrandType<GetType<T, Key>> extends true
+            ? `{value:${GetLabel<T, Key>}, label:${GetLabel<T, Key>}}`
+            : `${T extends Array<any> ? "[]." : ""}${GetType<T, Props> extends Array<any> ? `${Props}[]` : Props}.{value:${GetLabel<T, Key>}, label:${GetLabel<T, Key>}}`
+          : never
+        : never
+      : never;
 
 /**
  * @title Type that creates 'JMESPath' from the object
@@ -309,13 +315,4 @@ export type JMESPathHelper<T extends object> =
  *   JMESPath: JMESPath<Example, "[].arr2[].{value:name2, label:name2}">;
  * }>;
  */
-export type JMESPath<
-  T extends object,
-  JMESPath extends T extends Array<infer E extends object>
-    ? keyof E extends string
-      ?
-          | `[].{value:${keyof OmitObject<E>}, label:${keyof OmitObject<E>}}` // if API's response type is Array<infer E>, We must get keyof type of E.
-          | `[].${JMESPathHelper<E>}`
-      : never
-    : JMESPathHelper<T>,
-> = JMESPath;
+export type JMESPath<T extends object, JMESPath extends string> = JMESPath;
