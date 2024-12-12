@@ -22,6 +22,7 @@ import { tags } from "typia";
  * }
  * ```
  *
+ * @deprecated `const enum` 쓰거나 `typia.tags.Constant` 로 대체해주세요
  * @author Samchon
  */
 export type Constant<

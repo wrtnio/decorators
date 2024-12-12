@@ -1,6 +1,6 @@
 {
   "name": "@wrtnio/decorators",
-  "version": "1.4.12",
+  "version": "1.5.0",
   "description": "",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
@@ -8,29 +8,29 @@
   "author": "Wrtn Technologies",
   "license": "MIT",
   "devDependencies": {
-    "@nestia/core": "^3.7.1",
+    "@nestia/core": "^4.2.0",
     "@nestia/e2e": "^0.7.0",
-    "@nestia/fetcher": "^3.7.1",
-    "@nestia/sdk": "^3.7.1",
+    "@nestia/fetcher": "^4.2.0",
+    "@nestia/sdk": "^4.2.0",
     "@nestjs/common": "^10.3.10",
     "@nestjs/platform-express": "^10.3.10",
-    "@samchon/openapi": "^0.4.2",
+    "@samchon/openapi": "^2.0.3",
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "@types/jmespath": "^0.15.2",
     "@types/node": "^20.14.11",
     "jmespath": "^0.16.0",
-    "nestia": "^6.0.1",
+    "nestia": "^6.3.1",
     "prettier": "^3.3.3",
     "rimraf": "^6.0.1",
     "ts-node": "^10.9.2",
-    "ts-patch": "^3.2.1",
-    "typescript": "^5.5.3",
-    "typia": "^6.5.1"
+    "ts-patch": "^3.3.0",
+    "typescript": "~5.7.2",
+    "typia": "^7.2.0"
   },
   "peerDependencies": {
-    "@nestia/core": ">=3.2.0",
-    "@nestia/sdk": ">=3.2.0",
-    "typia": ">=6.0.4"
+    "@nestia/core": ">=4.0.0",
+    "@nestia/sdk": ">=4.0.0",
+    "typia": ">=7.0.0"
   },
   "scripts": {
     "build": "rimraf lib && tsc",
